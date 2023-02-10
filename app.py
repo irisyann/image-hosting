@@ -5,7 +5,7 @@ import os
 import zipfile
 from time import time 
 
-app = Flask(__name__, template_folder='templates', static_folder='uploads')  
+app = Flask(__name__, template_folder='templates', static_folder='uploads') 
 
 # Flask application configuration to specify where to save uploaded files
 app.config["UPLOAD_FOLDER"] = "uploads"
@@ -38,19 +38,21 @@ def upload_file():
                     file_url = url_for('static', filename = unzipped_files_folder + '/' + image)
                     urls.append(file_url)
                     
-                return render_template('success.html', images=images, urls=urls)
+                return render_template('success.html', images = images, urls = urls)
 
             # if file is image
             elif valid_file(file.filename):
                 file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+                urls = []
                 file_url = url_for('static', filename=filename)
-                return render_template('success.html', single_file_url = file_url)
+                urls.append(file_url)
+                return render_template('success.html', urls = urls)
 
-        # if no file was uploaded
-        elif not file:
-            return render_template('index.html', error_message = 'Please upload a valid image file or valid zip file.')
+            # if invalid file was uploaded
+            else:
+                return render_template('index.html', error_message = 'Please upload a valid image file or valid zip file.')
         
-        # if invalid file was uploaded
+        # if no file was uploaded
         else:
             return render_template('index.html', error_message = 'Please upload a valid image file or valid zip file.')
 
