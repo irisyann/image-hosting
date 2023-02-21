@@ -41,25 +41,20 @@ class TestApp(unittest.TestCase):
             file = FileStorage(fp, filename="test.jpg", content_type="image/jpeg")
 
             with self.client:
-                response = self.client.post("/result", data={"file": file})
+                response = self.client.post("/", data={"file": file})
                 self.assertEqual(response.status_code, 200)
                 fp.close()
                 os.remove("test.jpg")
 
-    def test_upload_invalid_file(self):
-        with open("test.txt", "wb") as fp:
-            fp.write(b"invalid_file_data")
-            fp.close()
-
-        with open("test.txt", "rb") as fp:
-            file = FileStorage(fp, filename="test.txt", content_type="text/plain")
-            response = self.client.post("/result", data={"file": file})
-            self.assertEqual(response.status_code, 500)
-            fp.close()
-            os.remove("test.txt")
+    def test_valid_file(self):
+        self.assertTrue(valid_file('image.png'))
+        self.assertTrue(valid_file('image.jpg'))
+        self.assertTrue(valid_file('image.jpeg'))
+        self.assertTrue(valid_file('image.gif'))
+        self.assertFalse(valid_file('text.txt'))
 
     def test_upload_no_file(self):
-        response = self.client.post("/result", data={})
+        response = self.client.post("/", data={})
         self.assertEqual(response.status_code, 400)
 
 if __name__ == '__main__':
