@@ -10,6 +10,10 @@ app = Flask(__name__, template_folder='templates', static_folder='uploads')
 # Flask application configuration to specify where to save uploaded files
 app.config["UPLOAD_FOLDER"] = "uploads"
 
+def verify_upload_folder():
+    if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+        os.mkdir(app.config["UPLOAD_FOLDER"])
+
 @app.route('/', methods = ['GET', 'POST'])
 def upload_file():
     if request.method == 'GET':
@@ -18,6 +22,9 @@ def upload_file():
     elif request.method == 'POST':
         file = request.files['file']
         filename = generate_filename(secure_filename(file.filename))
+
+        # ensure that the upload folder exists
+        verify_upload_folder()
 
         # if file is uploaded
         if file:
